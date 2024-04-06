@@ -1,0 +1,25 @@
+[submodule "cheviot-build"]
+	path = cheviot-build
+	url = git@github.com:Marvenlee/cheviot-build.git
+[submodule "drivers"]
+	path = drivers
+	url = git@github.com:Marvenlee/cheviot-drivers.git
+[submodule "filesystems"]
+	path = filesystems
+	url = git@github.com:Marvenlee/cheviot-filesystems.git
+[submodule "kernel"]
+	path = kernel
+	url = git@github.com:Marvenlee/cheviot-kernel.git
+[submodule "libc/newlib"]
+	path = libc/newlib
+	url = git@github.com:Marvenlee/newlib.git
+	branch = cheviot-main
+[submodule "libs"]
+	path = libs
+	url = git@github.com:Marvenlee/cheviot-libs.git
+[submodule "third-party"]
+	path = third-party
+	url = git@github.com:Marvenlee/cheviot-third-party.git
+[submodule "utils"]
+	path = utils
+	url = git@github.com:Marvenlee/cheviot-utils.git
