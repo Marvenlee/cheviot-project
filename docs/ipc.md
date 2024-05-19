@@ -14,7 +14,7 @@ handlers and device drivers.
 ![arch_diagram](images/cheviot_simple_architecture.png)
 
 
-## Interprocess Communication and Drivers
+# Interprocess Communication and Drivers
 
 Client applications do not send messages directly to file systems or drivers.
 Instead traditional system calls such as open, read and write are first processed
@@ -31,42 +31,98 @@ create a mount point on an existing directory and handle the namespace below thi
 mount point. Block and character device drivers mount onto a block or character device
 file, usually located in the "/dev" directory.
 
+Several system calls are used by the servers to handle messages and one internal function
+within the kernel to send messages to a server. We will begin by describing the ksendmsg
+used within the kernel.
 
-Several system calls are used within the event loop, these are:
+## ksendmsg
+
+```
+int ksendmsg(struct MsgPort *port, int siov_cnt, struct IOV *siov,
+             int riov_cnt, struct IOV *riov);
+```
+
+As mentioned earlier the kernel converts standard file system operations such as open,
+read, write and readdir into messages that it sends onto a server.  Internally this is
+done through a function named ksendmsg and is not exposed to the user directly.
+
+In ksendmsg, two arrays containing IOV are used.  These are 2 field structures containing
+an address and size. This is for handling multi-part messages where we we point to a message
+header in the first IOV and the associated data in any following IOVs. The siov array is
+for any data we are "sending" to the server and the riov is for pointing to where data we
+receive from a server will go.
+
+## mount
+
+
+
 
 ## kevent
 
-Blocks waiting from the message port and other events to arrive
+```
+int kevent(int fd, const struct kevent *changelist, int nchanges,
+               struct kevent *eventlist, int nevents, 
+               const struct timespec *_timeout)
+```
+CheviotOS supports a kqueue/kevent mechanism to detect when new messages arrive at a message
+port. In most cases kevent waits for a message to arrive and places details into a kevent
+structure. A server can use this to determine which message port fetch and process messages
+from. Kevent can also take a timeout parameter should the server need to periodically
+wake up and perform other tasks.
+
 
 ## getmsg
+
+```
+int getmsg(int fd, msgid_t *msgid, void *addr, size_t buf_sz);
+```
 
 This is a non-blocking call, This retrieves the first message if any from the
 mount point's message port or returns immediately if no message is waiting.
 It optionally can read some of the message into a buffer, this is usually used
 to read the message's header.
 
-Each message received with getmsg will be assigned a unique msgid. This is a 
-unique 64-bit number used only once and allows the server to handle many messages
-concurrently. The msgid is later used by the replymsg, readmsg and writemsg system calls.
+Each message received with getmsg will be assigned a unique msgid between 0 and 31.
+This allows a server to concurrently handle upto 32 messages and process them
+in any order.  The msgid is used when performing additional operations on a message,
+by the replymsg, readmsg and writemsg system calls.
 
 ## replymsg
+
+```
+int sys_replymsg(int fd, msgid_t msgid, int status, void *addr, size_t buf_sz);
+```
 
 This is used to reply to a message that has already been received by getmsg.
 Optionally a status code can be returned in addition to optional reply data.
 
-# readmsg
+## readmsg
+
+```
+int readmsg(int fd, msgid_t msgid, void *addr, size_t buf_sz, off_t offset);
+```
 
 This is used to read additional data from a message that is not in the header.
-Examples include filename strings or file data to write to disk.
+Examples include filename strings or file data to write to disk.  The offset
+specifies where in the senders "siov" IOVs the data should be read from.
+The offset is usually specified as "sizeof(struct fsreq)" to read additional
+data beyond the fsreq header.
 
-# writemsg
+## writemsg
+
+```
+int writemsg(int fd, msgid_t msgid, void *addr, size_t buf_sz, off_t offset);
+```
 
 This is used to write additional data in a reply to the VFS that is not in the
 reply-header sent by replymsg. Examples could be a list of filenames in response
-to a readdir command or the data from a command to read a file.
+to a readdir command or the data from a command to read a file. The offset
+specifies where in the senders "riov" IOVs the data should be written to. The offset
+is usually specified as "sizeof(struct fsreply)" to write additional data beyond
+the fsreply reply header.
 
 
-## Example File System Handler Event Loop
+# Example File System Handler Event Loop
 
 The example below shows a simple file system handler based on the IFS code.
 It first creates a mount point on top of an existing directory.  It opens the
@@ -134,7 +190,6 @@ using readmsg and write data back to the kernel's VFS with writemsg. Once the
 message has been handled the server calls replymsg to inform the VFS of the
 result.
 
-
 ```
 void fs\_lookup(int msgid, struct fsreq *req)
 {
@@ -143,13 +198,13 @@ void fs\_lookup(int msgid, struct fsreq *req)
   struct fsreply reply;
   char name[256];
   uint8_t block\_buf[512];
-    
-  // Read the filename in the rest of the message    
+  int status;
+  
+  // Read the filename that follows after the fsreq header    
   readmsg(portid, msgid, name, req->args.lookup.name\_sz, sizeof *req);
 
-  // Lookup the inode for filename...
-  // read and write the block device with:
-  // read(blockdev\_id, block\_buf, sizeof block\_buf);
+  // Lookup the inode for filename
+  // ... 
 
   // Send the reply to the VFS in the kernel    
   reply.args.lookup.inode\_nr = node->inode\_nr;
@@ -157,8 +212,9 @@ void fs\_lookup(int msgid, struct fsreq *req)
   reply.args.lookup.mode = node->permissions;
   reply.args.lookup.uid = 0;
   reply.args.lookup.gid = 0;
+  status = 0;
   
-  replymsg(portid, msgid, 0, &reply, sizeof reply);
+  replymsg(portid, msgid, status, &reply, sizeof reply);
 }
 ```
 
@@ -185,7 +241,7 @@ msgid. As messages don't have to be replied to in the order they are
 received the msgid provides a way to handle multiple messages from a
 mount point's message port.
 
-In the serial port driver we see this in conjunction with Libtask
+In the Aux UART and Serial driver we see this in conjunction with Libtask
 coroutines. This uses Dijkstra's secretaries and directors model
 of coooperating sequential processes. The main task which we call the secretary
 listens for incoming messages using kevent, much like a switchboard or front
@@ -201,6 +257,18 @@ at [https://www.cs.utexas.edu/users/EWD/transcriptions/EWD03xx/EWD310.html](http
 Similar to how block devices mount on top of block special files, the character
 devices are mounted on top of character special files created with mknod2.
 
+## Interrupts and Events
+
+Waiting for events using kevent can be interrupted by interrupts. In which case -1
+is return and errno set to EINTR. Interrupts are registered with the 
+addinterruptserver system call.  Interrupts can also be waited for using
+cthread\_event\_wait.  See the Aux UART driver for an example.
+
+## Signals and Aborts
+
+It is sometimes required that a long running request of a server be interrupted. for
+example and read from serial port with no data needs to be interrupted due to a SIGTERM
+signal to the client process reading from the serial port.  This is under development.
 
 ## Notifications
 

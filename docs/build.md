@@ -2,17 +2,26 @@
 
 # Requirements
 
-A Linux system with common developer tools, gcc, binutils, cmake and sqlite3.
+A Linux system is required with common developer tools such as gcc, binutils, cmake make.
 The following should get most of the required tools.
 
 ```
-sudo apt install build-essential
-sudo apt install cmake
-sudo apt install sqlite3
-sudo apt install sqlite3-dev
+    $ sudo apt install build-essential
+    $ sudo apt install cmake
+    $ sudo apt install sqlite3
+    $ sudo apt install sqlite3-dev
 ```
 
-## Building the project
+# Cloning the project
+
+```
+    $ git clone https://github.com/Marvenlee/cheviot-project.git
+    $ cd cheviot-project
+    $ git submodule update --init
+
+```
+
+# Building the project
 
 CMake is used as a meta-build tool that is used to build individual projects
 that are typical built with Autotools/Automake.
@@ -26,7 +35,7 @@ defaults to raspberrypi4.
 
 
 ```
-    $ cd cheviot
+    $ cd cheviot-project
     $ mkdir build
     $ cd build
     $ source ../setup-env.sh
@@ -38,7 +47,7 @@ defaults to raspberrypi4.
 This will build the projects and populate the build/host folder which contains
 the directory tree of the final root partition.
 
-We then run make image to build the final sd-card image:
+We then perform the following to build the final sd-card image:
 
 ```
     $ make image
@@ -50,8 +59,16 @@ This builds 3 images, the boot partition, the root partition and the combined sd
   * part2\_root.ext2
   * sdimage.img
 
-The partitions can be mounted on a Linux system with the loopback device.  The sdimage.img
-can be flashed to an SD-Card using dd, bmaptool or Balenaetcher.
+The sdimage.img can be flashed to an SD-Card using dd, bmaptool or Balenaetcher. For example
+if the sdcard is mounted as 2 partitions on the mmcblk0 device then unmount and flash the image
+onto it with:
+
+```
+umount /dev/mmcblk0p1
+umount /dev/mmcblk0p2
+sudo dd if=sdimage.img of=/dev/mmcblk0 bs=1M
+
+```
 
 # Notes
 
