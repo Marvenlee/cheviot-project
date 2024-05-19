@@ -28,7 +28,8 @@ that are typical built with Autotools/Automake.
 
 Build the project with the following commands from within the directory this
 readme.md resides in. This will build the GCC cross compiler, Newlib library
-and the kernel along with ksh, coreutils and several basic drivers.
+and the kernel along with ksh, coreutils and several basic drivers for the
+Raspberry Pi 4.
 
 Modify the setup-env.sh to set the appropriate board, currently this
 defaults to raspberrypi4.
@@ -64,11 +65,38 @@ if the sdcard is mounted as 2 partitions on the mmcblk0 device then unmount and 
 onto it with:
 
 ```
-umount /dev/mmcblk0p1
-umount /dev/mmcblk0p2
-sudo dd if=sdimage.img of=/dev/mmcblk0 bs=1M
+    $ umount /dev/mmcblk0p1
+    $ umount /dev/mmcblk0p2
+    $ sudo dd if=sdimage.img of=/dev/mmcblk0 bs=1M
 
 ```
+
+# Running CheviotOS
+
+Connect the Raspberry Pi 4 to a PC using a USB to Serial FTDI adaptor. The pins are
+listed in the table below.
+
+
+| Pi GPIO      | Pi Pin    | USB FTDI  |
+----------------------------------------
+| TXD GPIO 14  | 8         | RX        | 
+| RXD GPIO 15  | 10        | TX        | 
+| GND          | 6         | GND       |
+
+
+Open a terminal application on the PC, for example Minicom on Linux. Within the terminal
+application select the USB FTDI as the serial port.
+
+
+```
+    $ sudo minicom -D /dev/ttyUSB0
+```
+
+Insert the SD-Card that was flashed with the image in the earlier steps and power on 
+the Raspberry Pi.  After several seconds debug logs appear on the terminal followed by
+a CheviotOS banner.  At this point you will be in a Korn shell and can enter commands
+directly at the shell prompt.
+
 
 # Notes
 

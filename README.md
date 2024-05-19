@@ -39,65 +39,11 @@ Filesystems have been created for:
   * extfs - partially implemented (based on Minix extfs driver)
   * fatfs - partially implemented (requires rewrite).
 
-## Downloading
-
-Clone this base repository from:
-[git@github.com:Marvenlee/cheviot-project.git](git@github.com:Marvenlee/cheviot-project.git)
-
-```
-$ git clone git@github.com:Marvenlee/cheviot-project.git
-```
-
-Download all submodule repositories with
-
-```
-$ git submodule update --init
-```
-
-## Prerequisites for Building
-
-  * Standard Linux dev tools, gcc, ld, make, autotools, cmake
-  * sqlite and sqlite-dev
-
-## Building
-
-Source the setup-env.sh script with
-
-```
-$ . ./setup-env.sh
-```
-
-Make the build directory and build the project
-
-```
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make pseudo-native
-$ make
-```
-
-After some time everything will be built and installed into the build/build/host and
-build/build/boot_partition directories.
-
-The final step is to generate an image that can be flashed onto an SD-Card. The file
-*sdimage.img* is created with the following command:
-
-```
-$ make image
-```
-
-This image can be flashed onto an SD-Card after unmounting any partitions with:
-
-```
-$ sudo dd if=sdimage.img of=/dev/<name of block device> bs=1M
-```
-
 
 ## Documentation
 
-[ipc.md](docs/ipc.md) - Notes on message passing and servers
 [build.md](docs/build.md) - Build instructions
+[ipc.md](docs/ipc.md) - Notes on message passing and servers
 [status.md](docs/status.md) - Current project status and plans
 
 
