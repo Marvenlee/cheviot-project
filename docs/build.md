@@ -78,7 +78,7 @@ listed in the table below.
 
 
 | Pi GPIO      | Pi Pin    | USB FTDI  |
-----------------------------------------
+| ------------ | --------- | --------- |
 | TXD GPIO 14  | 8         | RX        | 
 | RXD GPIO 15  | 10        | TX        | 
 | GND          | 6         | GND       |

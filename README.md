@@ -42,9 +42,10 @@ Filesystems have been created for:
 
 ## Documentation
 
-[build.md](docs/build.md) - Build instructions
-[ipc.md](docs/ipc.md) - Notes on message passing and servers
-[status.md](docs/status.md) - Current project status and plans
+  * [build.md](docs/build.md) - Build instructions
+  * [ipc.md](docs/ipc.md) - Notes on message passing and servers
+  * [status.md](docs/status.md) - Current project status
+  * [future.md](docs/future.md) - Thoughts on OS restructure into rings.
 
 
 ## Licensing
