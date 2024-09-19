@@ -43,10 +43,11 @@ Filesystems have been created for:
 ## Documentation
 
   * [build.md](docs/build.md) - Build instructions
+  * [status.md](docs/status.md) - Current project status and goals
+  * [source-layout.md](docs/source-layout.md) - Overview of the source code tree.
+  * [bootstrap.md](docs/bootstrap.md) - Documents how the OS is bootstrapped
   * [ipc.md](docs/ipc.md) - Notes on message passing and servers
-  * [status.md](docs/status.md) - Current project status
   * [future.md](docs/future.md) - Thoughts on OS restructure into rings.
-
 
 ## Licensing
 

@@ -28,6 +28,9 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libc-newlib.cmake)
 
 # Build and install other libraries on build platform
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-hal.cmake)
+
+include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/dtc.cmake)
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-libs.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-bsdlibs.cmake)
 

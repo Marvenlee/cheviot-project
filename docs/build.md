@@ -3,13 +3,16 @@
 # Requirements
 
 A Linux system is required with common developer tools such as gcc, binutils, cmake make.
-The following should get most of the required tools.
+The following will get the required tools to build the project.
 
 ```
     $ sudo apt install build-essential
     $ sudo apt install cmake
-    $ sudo apt install sqlite3
-    $ sudo apt install sqlite3-dev
+    $ sudo apt install automake autoconf
+    $ sudo apt install libsqlite3-dev
+    $ sudo apt install texinfo
+    $ sudo apt install libgmp-dev libmpfr-dev libmpc-dev
+    $ sudo apt install mtools
 ```
 
 # Cloning the project
@@ -87,10 +90,13 @@ listed in the table below.
 Open a terminal application on the PC, for example Minicom on Linux. Within the terminal
 application select the USB FTDI as the serial port.
 
-
 ```
     $ sudo minicom -D /dev/ttyUSB0
 ```
+
+In Minicon's serial port settings set the baud rate to 115200, 8 bits,
+no parity, 1 stop bit (8N1) and disable software and hardware flow control.
+In addition in the Terminal settings set the Backspace key to send the 'DEL' character.
 
 Insert the SD-Card that was flashed with the image in the earlier steps and power on 
 the Raspberry Pi.  After several seconds debug logs appear on the terminal followed by
@@ -100,12 +106,31 @@ directly at the shell prompt.
 
 # Notes
 
+## Pseudo and File Permissions
+
 Pseudo is used so that commands can run as a "virtual" root user. Sqlite3 is used as a
 database of the generated files "virtual" permissions so that we can set most files
 as being owned by root and with appropriate permissions.
+
+## Bootloader and IFS
 
 The 'make image' command runs the tools/mk-kernel.img.sh script to create the kernel.img
 that is placed on the boot partition.  This combines the bootloader and Initial File System
 (IFS) image which contains the required files to bootstrap the system. The required files
 includes the kernel, UART and other drivers.
+
+## Partition Sizes
+
+The setup-env.sh can be modified to increase the size of the partitions. Alter the
+values for the following 2 variables.
+
+  * BOOT\_PARTITION\_SIZE\_MB
+  * ROOT\_PARTITION\_SIZE\_MB
+
+Additional partitions could be created within the mk-sdcard-image.sh and mounting these
+in the /etc/startup.cfg script.
+
+
+
+
 
