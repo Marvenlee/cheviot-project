@@ -68,7 +68,7 @@ Current drivers include:
   * **random**\
   True Random Number Generator driver  
   * **sdcard**\
-  SD-Card driver based on Mike Cronin's sources
+  SD-Card driver based on John Cronin's sources
   * **null**\
   A "/dev/null" driver. The simplest driver implemented.
 
