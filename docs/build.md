@@ -3,7 +3,7 @@
 # Requirements
 
 A Linux system is required with common developer tools such as gcc, binutils, cmake make.
-The following will get the required tools to build the project.
+The following will get the required tools to build the project on Ubuntu 22.04.
 
 ```
     $ sudo apt install build-essential
@@ -13,7 +13,15 @@ The following will get the required tools to build the project.
     $ sudo apt install texinfo
     $ sudo apt install libgmp-dev libmpfr-dev libmpc-dev
     $ sudo apt install mtools
+
+    # Additionally the following may already be installed, if
+    # not install them with:
+    
+    $ sudo apt install dosfstools
+    $ sudo apt install fdisk
+    $ sudo apt install file
 ```
+
 
 # Cloning the project
 
@@ -74,6 +82,55 @@ onto it with:
 
 ```
 
+# Building in a Docker Container
+
+The "docker" folder contains scripts that can be used to set up a docker environment.
+
+Install Docker with the following:
+
+```
+    $ sudo snap install docker
+```
+
+By default Docker requires running with "sudo" privileges. To give a normal user account
+permission to run Docker without using "sudo" add a "docker" group and add the current
+user to this group:
+
+```
+    $ sudo groupadd docker
+    $ sudo usermod -aG docker $USER
+```
+
+Build the Docker image "cheviot-image" from the docker folder. This may take some time
+as it gathers the necessary packages and creates the image:
+
+```
+    $ ./build_docker.sh
+```
+
+Start the Docker container with:
+
+```
+    $ ./run_docker.sh
+```
+
+This will start the Docker container in interactive mode with a Bash shell in the home
+directory of the "cheviot" user.  The top-level directory of the CheviotOS project
+will be located in the sub-folder "project".  This folder is external to the Docker container,
+it is a bind-mount to the project's top-level directory.  Any changes outside of the Docker
+container are reflected in this folder.
+
+To build the project, change directory into this folder, £/home/cheviot/project" and follow
+the build steps above.  You will need to flash the created SD-Card image outside of the
+Docker container as you will not have permission to unmount and write to block devices inside
+the container.
+
+The Docker container can be exited with the "exit" command.
+
+The cleanup_docker.sh script can be used to delete all containers that use the "cheviot-image"
+and the imqge itself.
+
+
 # Running CheviotOS
 
 Connect the Raspberry Pi 4 to a PC using a USB to Serial FTDI adaptor. The pins are
@@ -108,9 +165,11 @@ directly at the shell prompt.
 
 ## Pseudo and File Permissions
 
-Pseudo is used so that commands can run as a "virtual" root user. Sqlite3 is used as a
-database of the generated files "virtual" permissions so that we can set most files
-as being owned by root and with appropriate permissions.
+Pseudo is used so that commands can run as a "virtual" sudo/root user and is used for
+creating the root filesystem image with system files being assigned the root user
+and group ID. Sqlite3 is used as a database of the generated files "virtual" permissions
+so that we can set most files as being owned by root and with appropriate permissions.
+See the pseudo man page and Yocto forums for details.
 
 ## Bootloader and IFS
 
@@ -129,8 +188,6 @@ values for the following 2 variables.
 
 Additional partitions could be created within the mk-sdcard-image.sh and mounting these
 in the /etc/startup.cfg script.
-
-
 
 
 
