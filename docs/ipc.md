@@ -74,7 +74,7 @@ wake up and perform other tasks.
 ## getmsg
 
 ```
-int getmsg(int fd, msgid_t *msgid, void *addr, size_t buf_sz);
+int getmsg(int fd, msgid_t *msgid, iorequest_t *req_buf, size_t req_buf_sz);
 ```
 
 This is a non-blocking call, This retrieves the first message if any from the
@@ -82,15 +82,15 @@ mount point's message port or returns immediately if no message is waiting.
 It optionally can read some of the message into a buffer, this is usually used
 to read the message's header.
 
-Each message received with getmsg will be assigned a unique msgid between 0 and 31.
-This allows a server to concurrently handle upto 32 messages and process them
-in any order.  The msgid is used when performing additional operations on a message,
-by the replymsg, readmsg and writemsg system calls.
+Each message received with getmsg will be assigned a unique msgid based on the
+sending thread's thread ID. This allows a server to concurrently handle multiple
+messages and process them out of order.  The msgid is used when performing
+operations on the message such as readmsg and writemsg and replymsg.
 
 ## replymsg
 
 ```
-int sys_replymsg(int fd, msgid_t msgid, int status, void *addr, size_t buf_sz);
+int sys_replymsg(int fd, msgid_t msgid, int status, ioreply_t *reply, size_t reply_sz);
 ```
 
 This is used to reply to a message that has already been received by getmsg.
@@ -140,10 +140,12 @@ mount message ports if the driver supports multiple units.
 
 
 ```
-  portid = mount ("/media/mymount", 0, &stat);
+  mknod2("/media/mymount", flags, &stat);
+  
+  portid = createmsgport("/media/mymount", 0, &stat);
   block\_fd = open("/dev/sdcard0p1", O_RDWR);  
 
-  struct fsreq req;
+  iorequest\_t req;
   int rc;
   int nevents;
   struct kevent ev;
@@ -195,13 +197,13 @@ void fs\_lookup(int msgid, struct fsreq *req)
 {
   struct fs\_inode *dir\_node;
   struct fs\_inode *node;
-  struct fsreply reply;
+  struct ioreply\_t reply;
   char name[256];
   uint8_t block\_buf[512];
   int status;
   
   // Read the filename that follows after the fsreq header    
-  readmsg(portid, msgid, name, req->args.lookup.name\_sz, sizeof *req);
+  readmsg(portid, msgid, name, req->args.lookup.name\_sz, 0);
 
   // Lookup the inode for filename
   // ... 
@@ -276,9 +278,46 @@ Sometimes it is necessary for drivers to signal asynchronously to the VFS that
 some event has occurred.  For example a terminal may need to send a signal
 immediately such as SIGTERM to a client process when a key combination is entered.
 
-The mechanism for this is under development with two system calls, knote and
-signalnotify. knote is for raising an event on a particular object such as a vnode
-and signalnotify is for sending signals to clients.
+signalnotify() is used to send a signal to a controlling terminal.
+
+```
+int sys_signalnotify(int fd, int ino_nr, int signal);
+```
+
+knotei() is used to add a knote to a kqueue for a particular inode.
+
+```
+int sys_knotei(int fd, int ino_nr, long hint);
+```
+
+## SendMsg
+
+The sendmsg system call is a general purpose blocking send and receive function for sending
+arbitrary data to a server.  The subclass defines the message class, for example plain text,
+xml or binary messages for specific server types such as GPIO or Mailbox servers.
+The message sent to a server and the receiving buffer are both defined using and array
+of msgiov_t that define buffer addresses and sizes.
+
+```
+int sendmsg(int fd, int subclass, int siov_cnt, msgiov_t *_siov, 
+            int riov_cnt, msgiov_t *_riov);
+```
+
+## Say Command
+
+Sendmsg can be thought of as an 'enhanced' ioctl mechanism. From the shell command line
+the "say" command can be used to send plain text commands to drivers.
+
+For example:
+
+```
+$ say /dev/sda "profiling enable"
+OK
+$ say /dev/sda "profiling stats"
+
+<A list of stats from the driver are printed>
+
+```
 
 
 
