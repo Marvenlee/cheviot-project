@@ -144,6 +144,9 @@ listed in the table below.
 | GND          | 6         | GND       |
 
 
+![raspberry_pi_4](images/raspberry_pi_4.jpg)
+
+
 Open a terminal application on the PC, for example Minicom on Linux. Within the terminal
 application select the USB FTDI as the serial port.
 

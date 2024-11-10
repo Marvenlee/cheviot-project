@@ -12,6 +12,8 @@ CheviotOS is a multi-server microkernel operating system for the Raspberry Pi 4.
 The kernel's API is mostly compatible with POSIX and is able to run the Korn
 shell and a number of command line utilities from NetBSD and GNU Coreutils.
 
+![cheviotos_screenshot](docs/images/cheviot_command_line.png)
+
 Development started in 2013 on a Raspberry Pi 1 and previously as a KielderOS
 on x86 PCs in the mid 2000s. This is a hobby so development occurs when time
 permits.
@@ -38,6 +40,13 @@ Filesystems have been created for:
   * devfs - Simple file system mounted as /dev
   * extfs - partially implemented (based on Minix extfs driver)
   * fatfs - partially implemented (requires rewrite).
+
+
+## Hardware Requirements
+
+CheviotOS currently runs on a Raspberry Pi 4 with shell access via USB to FTDI serial port adapter.
+
+![raspberry_pi_4](docs/images/raspberry_pi_4.jpg)
 
 
 ## Documentation
