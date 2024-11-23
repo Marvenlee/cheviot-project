@@ -108,6 +108,8 @@ as it gathers the necessary packages and creates the image:
     $ ./build_docker.sh
 ```
 
+## Building Manually
+
 Start the Docker container with:
 
 ```
@@ -127,8 +129,26 @@ the container.
 
 The Docker container can be exited with the "exit" command.
 
+
+## Building Automatically
+
+The run\_build.sh starts the Docker container in non-interactive mode and runs the docker\_entrypoint.sh
+script to build the whole project automatically.
+
+
+```
+    $ ./run_build.sh
+```
+
+
+## Docker Cleanup
+
 The cleanup_docker.sh script can be used to delete all containers that use the "cheviot-image"
 and the imqge itself.
+
+```
+    $ ./cleanup_docker.sh
+```
 
 
 # Running CheviotOS
