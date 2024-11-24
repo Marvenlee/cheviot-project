@@ -9,6 +9,7 @@ The kernel's virtual filesystem is mostly complete. There are a still a
 few things to do.
 
 ### Pathname Lookup
+
 Currently we allocate 1K pathname lookup buffers on the kernel stack.
 The stack is 4K, so half of this is used by the sys_rename() syscall.
 We need to allocate a 4K page on pathname lookup, and release this after
@@ -16,11 +17,12 @@ it is used.  The lookup_discard() function should also dereference the
 vnodes it returned so we need to increment their reference counts.
 
 ### Vnode Reference Counting and Locking
+
 This brings us to a general problem of vnode reference counting and locking.
 We need to make sure the reference counts are handled correctly so that we
 don't have dangling vnodes that are no longer used and cannot be freed.
 
-Similarly we need to make sure the vnodes are locked correctly.
+Similarly we need to make sure the vnodes are being locked correctly.
 
 ### Links
 
@@ -39,11 +41,19 @@ Ensure "/dev/tty" is not handled by the DNLC.
 The file cache handling creates tasks to flush a mount's blocks out after
 a delay of several seconds. Ensure this works.
 
+### Dynamic File Cache Size
+
+The kernel currently implements a fixed size file cache. We need to scale this
+with the amount of free memory. There is also some cleanup needed of page table
+mapping code related to this fixed size file cache that needs removing.
+
 ### Closing Message Ports
 
 Message ports are handled by the filesystem.  If a server closes a message
 port, ensure the filesystem or device it handles is unmounted.  Ensure
 we can safely perform a sync before unmounting.
+
+
 
 ## Ext2 File System Handler
 
@@ -51,19 +61,16 @@ The Ext2 file system handler is a rewrite of the Ext2 driver from Minix and
 is under the Minix. Reading works for files and directories. Writing and creating
 files is known to have issues. Debug this.
 
-### SD Card Driver
+
+
+## SD Card Driver
 
 The SD Card driver is using polling to wait for interrupts. We need to use interrupts.
 We need to optimize reads and writes in conjunction with the Ext2 filesystem handler.
 
-## Dynamic File Cache Size
-
-The kernel currently implements a fixed size file cache. We need to scale this
-with the amount of free memory. There is also some cleanup needed of page table
-mapping code related to this fixed size file cache that needs removing.
 
 
-### Login and BSD Libraries
+## Login and BSD Libraries
 
 We have ported the login command from NetBSD and the BSD libraries needed to do so.
 Login currently doesn't work as we need the ext2 filesystem to be able to do writes.
@@ -75,6 +82,7 @@ That will allow us to complete most of the user login and create accounts.  Curr
 we boot straight to the PD-KSH shell.
 
 
+
 ## Threads
 
 CheviotOS thread support is minimal. Processes and threads are separated.  We create
@@ -84,6 +92,7 @@ such as mutexes and expose these to userland.
 
 The pthreads API will be added to CheviotOS's version of Newlib. Fast locking with
 "ldxr" and "stxr" for compare and exchange will need looking into.
+
 
 
 ## Networking and Sockets
@@ -102,10 +111,13 @@ The Broadcom Genet driver for the Raspberry Pi 4 will need porting,  it should b
 similar to other device drivers. We could use sendmsg() to configure the network
 interface of a driver, to bring it up or down for instance.
 
+
+
 ## USB
 
 We could port the TinyUSB library for embedded devices in a similar way to LwIP
 and use it as a basis to create a USB server.
+
 
 
 ## Creating Message Ports
@@ -121,6 +133,7 @@ and perhaps new threads or coroutines created.  This is to avoid having a small 
 of tasks in a server that can only concurrently handle a small number of connections.
 
 
+
 ## Aux UART Driver
 
 We need to handle interrupts when writing to the UART.  Currently we busy-wait until
@@ -130,9 +143,11 @@ Termios handling needs to be finished. with the ability to change baud and
 to flush buffers.
 
 
+
 ## The alarm() syscall
 
 The alarm syscall needs implementing. Posix timers may be needed later.
+
 
 
 ## Events, Kqueue and Select
@@ -148,10 +163,12 @@ only used by servers to wait for messages and interrupts. We need to finish our
 kqueue implementation for files and devices.
 
 
+
 ## Non-Blocking Reads and Writes
 
 Non-blocking reads and writes are not currently implemented. We need kqueue() and
 select() to be finished.
+
 
 
 ## Memory Management
