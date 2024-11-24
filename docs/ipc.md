@@ -140,22 +140,22 @@ mount message ports if the driver supports multiple units.
   mknod2("/media/mymount", flags, &stat);
   
   portid = createmsgport("/media/mymount", 0, &stat);
-  block\_fd = open("/dev/sdcard0p1", O_RDWR);  
+  block_fd = open("/dev/sdcard0p1", O_RDWR);  
 
-  iorequest\_t req;
+  iorequest_t req;
   int rc;
   int nevents;
   struct kevent ev;
   msgid_t msgid;
     
-  EV\_SET(&ev, portid, EVFILT\_MSGPORT, EV\_ADD | EV\_ENABLE, 0, 0, 0); 
+  EV_SET(&ev, portid, EVFILT_MSGPORT, EV_ADD | EV_ENABLE, 0, 0, 0); 
   kevent(kq, &ev, 1,  NULL, 0, NULL);
 
   while (1) {
     errno = 0;
     nevents = kevent(kq, NULL, 0, &ev, 1, NULL);
   
-    if (nevents == 1 && ev.ident == portid && ev.filter == EVFILT\_MSGPORT) {
+    if (nevents == 1 && ev.ident == portid && ev.filter == EVFILT_MSGPORT) {
       while ((rc = getmsg(portid, &msgid, &req, sizeof req)) == sizeof req) {
         switch (req.cmd) {
           case CMD_LOOKUP:
@@ -190,24 +190,24 @@ message has been handled the server calls replymsg to inform the VFS of the
 result.
 
 ```
-void fs\_lookup(int msgid, iorequest_t *req)
+void fs_lookup(int msgid, iorequest_t *req)
 {
-  struct fs\_inode *dir\_node;
-  struct fs\_inode *node;
-  struct ioreply\_t reply;
+  struct fs_inode *dir_node;
+  struct fs_inode *node;
+  struct ioreply_t reply;
   char name[256];
-  uint8_t block\_buf[512];
+  uint8_t block_buf[512];
   int status;
   
   // Read the filename using readmsg as it is not part of the iorequest header    
-  readmsg(portid, msgid, name, req->args.lookup.name\_sz, 0);
+  readmsg(portid, msgid, name, req->args.lookup.name_sz, 0);
 
   // Lookup the inode for filename
   // ... 
 
   // Send the reply to the VFS in the kernel    
-  reply.args.lookup.inode\_nr = node->inode\_nr;
-  reply.args.lookup.size = node->file\_size;
+  reply.args.lookup.inode_nr = node->inode_nr;
+  reply.args.lookup.size = node->file_size;
   reply.args.lookup.mode = node->permissions;
   reply.args.lookup.uid = 0;
   reply.args.lookup.gid = 0;
