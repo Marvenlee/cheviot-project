@@ -53,10 +53,11 @@ CheviotOS currently runs on a Raspberry Pi 4 with shell access via USB to FTDI s
 
   * [build.md](docs/build.md) - Build instructions
   * [status.md](docs/status.md) - Current project status and goals
-  * [source-layout.md](docs/source-layout.md) - Overview of the source code tree.
+  * [todo-list.md](docs/todo-list.md) - More detailed notes on what needs doing
+  * [source-layout.md](docs/source-layout.md) - Overview of the source code tree
   * [bootstrap.md](docs/bootstrap.md) - Documents how the OS is bootstrapped
   * [ipc.md](docs/ipc.md) - Notes on message passing and servers
-  * [future.md](docs/future.md) - Thoughts on OS restructure into rings.
+  * [future.md](docs/future.md) - Thoughts on OS restructure into rings
 
 ## Licensing
 

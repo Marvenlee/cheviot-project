@@ -34,4 +34,39 @@ works. This only implements:
 
 It is estimated that the code size could be less than 2 kilobytes.
 
+The trampoline needs to manage a single thread at a time, holding only the state to allow
+the current thread to call and return between rings.
+
+
+### Use Cases of Rings
+
+Some use cases of protection rings are:
+
+#### Reference monitor
+
+Applications could have a common reference monitor that checks which syscalls are allowed
+and can perform auditing and logging of these.
+
+#### Device Manager
+
+Would allow faster calls for APIs such as toggling GPIOs as there would be no message
+passing and scheduling overhead as happens in the current implementation.  The device manager
+can also limit what memory device drivers can map in.
+
+#### Cryptographic Key Management Ring
+
+A ring to manage cryptographic keys and access any crypto hardware.
+
+#### GUI and Audio
+
+Having synchronous IPC with effectively 1-to-1 threads would allow for faster commands
+to these servers.  It would also avoid going through the filesystem or sendmsg paths
+to copy data, avoiding scheduling overhead.
+
+#### Sandboxed Applications
+
+Applications or applets could be contained in lightweight containers.  Having to first
+call into the main application or reference monitor to request any action.
+
+
 
