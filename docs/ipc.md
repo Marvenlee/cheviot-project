@@ -105,8 +105,7 @@ int readmsg(int fd, msgid_t msgid, void *addr, size_t buf_sz, off_t offset);
 This is used to read additional data from a message that is not in the header.
 Examples include filename strings or file data to write to disk.  The offset
 specifies where in the senders "siov" IOVs the data should be read from.
-The offset is usually specified as "sizeof(struct fsreq)" to read additional
-data beyond the fsreq header.
+
 
 ## writemsg
 
@@ -117,9 +116,7 @@ int writemsg(int fd, msgid_t msgid, void *addr, size_t buf_sz, off_t offset);
 This is used to write additional data in a reply to the VFS that is not in the
 reply-header sent by replymsg. Examples could be a list of filenames in response
 to a readdir command or the data from a command to read a file. The offset
-specifies where in the senders "riov" IOVs the data should be written to. The offset
-is usually specified as "sizeof(struct fsreply)" to write additional data beyond
-the fsreply reply header.
+specifies where in the senders "riov" IOVs the data should be written to.
 
 
 # Example File System Handler Event Loop
@@ -193,7 +190,7 @@ message has been handled the server calls replymsg to inform the VFS of the
 result.
 
 ```
-void fs\_lookup(int msgid, struct fsreq *req)
+void fs\_lookup(int msgid, iorequest_t *req)
 {
   struct fs\_inode *dir\_node;
   struct fs\_inode *node;
@@ -202,7 +199,7 @@ void fs\_lookup(int msgid, struct fsreq *req)
   uint8_t block\_buf[512];
   int status;
   
-  // Read the filename that follows after the fsreq header    
+  // Read the filename using readmsg as it is not part of the iorequest header    
   readmsg(portid, msgid, name, req->args.lookup.name\_sz, 0);
 
   // Lookup the inode for filename

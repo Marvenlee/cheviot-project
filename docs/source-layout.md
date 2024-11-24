@@ -143,7 +143,7 @@ In addition there is low-level architecture specific directory in:
 Cheviot adds additional headers in **newlib/newlib/libc/include**.  
 
 Some notable include files are:
-  * **sys/fsreq.h**\
+  * **sys/iorequest.h**\
   Contains the message headers of messages sent to device drivers and filesystem handlers.
   * **sys/syscalls.h**\
   Prototypes for the CheviotOS system calls.
