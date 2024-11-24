@@ -179,6 +179,12 @@ to be able to map files for reading. Maybe not for writing.
 Sharing of memory between a client and server might also be useful for IPC.
 
 
+## Shutdown and Reboot
+
+The reboot syscall needs implementing.  User sessions and processes need terminating.
+Filesystems need syncing and unmounting. Drivers need stopping.
+
+
 ## Compiler Warnings, FIXMEs, TODOs and Cleanup
 
 Turing all warnings on during the build has shown a large number warnings. Similarly
@@ -199,6 +205,28 @@ We need to define the formats that servers supporting the sendmsg() command can 
 Either as plain text, json, xml or binary commands.  
 
 We could define messages for power management to drivers as well as tweaking driver settings.
+
+Sendmsg needs to be renamed to avoid conflicting with socket sendmsg.
+
+
+## Kernel Preemption
+
+The microkernel currently implements a big kernel lock. This means only a single thread
+can run at a time within the kernel and threads are scheduled cooperatively within the
+kernel.  The big kernel lock forms a "monitor" with sleep and wakeup of tasks blocked
+on condition variables.  Tasks sleeping on a condition variable or exiting the the
+kernel are the only points where a reschedule occurs.  Rescheduling doesn't occur when
+an interrupt returns.  Effectively the kernel is coroutining.
+
+Kernel preemption will replace the big kernel lock with mutexes and similar sleep and
+wakeup on condition variables.  Instead of a single big kernel lock, it might be the
+kernel can be protected by 2 or 3 mutexes, 1 for the filesystem and another for process
+and task management.  In many cases we can grab a mutex, set a kernel object to be in a busy
+state and release the mutex before doing whatever operations on the kernel object. 
+
+Thread scheduling can be done whenever a mutex is acquired or released, or when a thread
+blocks on a condition variable. Scheduling should also occur prior to returning from
+an interrupt service routine.
 
 
 ## Protection Rings
