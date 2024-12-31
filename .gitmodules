@@ -23,3 +23,6 @@
 [submodule "utils"]
 	path = utils
 	url = git@github.com:Marvenlee/cheviot-utils.git
+[submodule "servers"]
+	path = servers
+	url = https://github.com/Marvenlee/cheviot-servers.git

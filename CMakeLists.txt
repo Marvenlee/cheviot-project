@@ -35,6 +35,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-libs.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-bsdlibs.cmake)
 
 # Build and install third-party libraries on build platform
+include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/lwip.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/libtask.cmake)
 
 # Build bootloader for host platform
@@ -45,6 +46,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/kernel.cmake)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/drivers.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/filesystems.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/servers.cmake)
 
 # Build utilities for host platform
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/utils.cmake)
@@ -58,8 +60,6 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/less.cmake)
 # Build any tests
 
 # include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/utils-tests.cmake)
-
-
 
 # Build the partition images and combine into a single sdcard image
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/build-image.cmake)
