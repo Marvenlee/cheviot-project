@@ -59,7 +59,7 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/less.cmake)
 
 # Build any tests
 
-# include(${CMAKE_CURRENT_SOURCE_DIR}/third-party/cmake/utils-tests.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/utils-tests.cmake)
 
 # Build the partition images and combine into a single sdcard image
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/build-image.cmake)
