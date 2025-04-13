@@ -21,6 +21,7 @@ add_custom_target(host_apps)
 
 # Build and install GCC, binutils, newlib and build-tools on build platform
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/build-mkifs.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libs-fixincludes.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/binutils.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/gcc.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cheviot-build/cmake/libc-newlib-interim.cmake)
